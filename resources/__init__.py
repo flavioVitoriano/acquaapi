@@ -1,2 +1,3 @@
-from .client import ClientResource
-from .user import UserResource
+from .client import *
+from .user import *
+from .purchase import *

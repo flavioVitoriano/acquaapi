@@ -12,7 +12,7 @@ class UserResource(Resource):
         auth = request.json
 
         if not auth or not auth.get("username", None) or not auth.get("password", None):
-            return json_response({"message": "could not verify"}, 401)
+            return json_response({"message": "could not verify"}, 400)
 
         user = User.get(username=auth["username"])
 
@@ -26,4 +26,4 @@ class UserResource(Resource):
             )
             return json_response({"token": token.decode("UTF-8")}, 201)
 
-        return json_response({"message": "could not verify"}, 401)
+        return json_response({"message": "could not verify"}, 400)
