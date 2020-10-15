@@ -3,12 +3,19 @@ from flask import request
 from decorators import token_required
 from common.response import json_response
 from playhouse.shortcuts import model_to_dict
+from functools import reduce
+
+
+def deepgetattr(obj, attr):
+    """Recurses through an attribute chain to get the ultimate value."""
+    return reduce(getattr, attr.split("."), obj)
 
 
 class BaseResource(Resource):
     @token_required
     def get(self, user):
         data = self.Meta.model.select().where(self.Meta.model.user == user).dicts()
+
         return json_response(list(data), 200)
 
     @token_required
@@ -21,6 +28,10 @@ class BaseResource(Resource):
         obj = self.Meta.model.create(**data, user=user)
         json_obj = model_to_dict(obj)
         json_obj["user"] = user.public_id
+
+        if self.Meta.replace_fields:
+            for field in self.Meta.replace_fields:
+                json_obj[field["field"]] = deepgetattr(obj, field["attr"])
 
         return json_response(json_obj, 201)
 

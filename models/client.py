@@ -1,6 +1,7 @@
 import peewee as pw
 from db import BaseModel
 from .user import User
+from datetime import datetime
 
 
 class Client(BaseModel):
@@ -11,3 +12,4 @@ class Client(BaseModel):
     city = pw.CharField(max_length=255, null=True)
     phone = pw.CharField(max_length=255, null=True)
     preferred_price = pw.DecimalField(max_digits=10, decimal_places=2, default=0)
+    created_at = pw.DateField(default=datetime.now)

@@ -8,7 +8,7 @@ class Purchase(BaseModel):
     user = pw.ForeignKeyField(User, backref="purchases")
     quantity = pw.IntegerField(default=1)
     value = pw.DecimalField(max_digits=10, decimal_places=2)
-    submit_data = pw.DateTimeField(default=datetime.now)
+    submit_date = pw.DateField(default=datetime.now)
 
     @property
     def total(self):

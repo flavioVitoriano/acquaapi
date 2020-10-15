@@ -5,8 +5,10 @@ from resources import (
     ClientResource,
     UserResource,
     PurchaseResource,
+    SaleResource,
     ClientSingleResource,
     PurchaseSingleResource,
+    SaleSingleResource,
 )
 from db import db as database
 
@@ -32,3 +34,5 @@ api.add_resource(ClientResource, "/clients/")
 api.add_resource(ClientSingleResource, "/clients/<int:pk>/")
 api.add_resource(PurchaseResource, "/purchases/")
 api.add_resource(PurchaseSingleResource, "/purchases/<int:pk>/")
+api.add_resource(SaleResource, "/sales/")
+api.add_resource(SaleSingleResource, "/sales/<int:pk>/")
