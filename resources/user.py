@@ -2,6 +2,7 @@ from flask import request
 from flask_restful import Resource
 from models import User
 from common import check_passwords, json_response
+from playhouse.shortcuts import model_to_dict
 import jwt
 import datetime
 import os
@@ -24,6 +25,8 @@ class UserResource(Resource):
                 },
                 os.environ.get("SECRET_KEY"),
             )
-            return json_response({"token": token.decode("UTF-8")}, 201)
+            return json_response(
+                {"token": token.decode("UTF-8"), "user": model_to_dict(user)}, 201
+            )
 
         return json_response({"message": "could not verify"}, 400)
