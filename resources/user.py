@@ -25,8 +25,11 @@ class UserResource(Resource):
                 },
                 os.environ.get("SECRET_KEY"),
             )
+            json_user = model_to_dict(user)
+            json_user.pop("password")
+
             return json_response(
-                {"token": token.decode("UTF-8"), "user": model_to_dict(user)}, 201
+                {"token": token.decode("UTF-8"), "user": json_user}, 201
             )
 
         return json_response({"message": "could not verify"}, 400)
