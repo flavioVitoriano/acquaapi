@@ -6,9 +6,11 @@ from resources import (
     UserResource,
     PurchaseResource,
     SaleResource,
+    LoanResource,
     ClientSingleResource,
     PurchaseSingleResource,
     SaleSingleResource,
+    LoanSingleResource,
 )
 from db import db as database
 
@@ -36,3 +38,5 @@ api.add_resource(PurchaseResource, "/purchases/")
 api.add_resource(PurchaseSingleResource, "/purchases/<int:pk>/")
 api.add_resource(SaleResource, "/sales/")
 api.add_resource(SaleSingleResource, "/sales/<int:pk>/")
+api.add_resource(LoanResource, "/loans/")
+api.add_resource(LoanSingleResource, "/loans/<int:pk>/")

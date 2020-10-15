@@ -56,6 +56,14 @@ class BaseSingleResource(Resource):
         json_obj = model_to_dict(obj)
         json_obj["user"] = user.public_id
 
+        if self.Meta.fields:
+            for field in self.Meta.fields:
+                json_obj[field] = getattr(obj, field)
+
+        if self.Meta.replace_fields:
+            for field in self.Meta.replace_fields:
+                json_obj[field["field"]] = deepgetattr(obj, field["attr"])
+
         return json_response(json_obj, 200)
 
     @token_required
@@ -69,6 +77,10 @@ class BaseSingleResource(Resource):
         if self.Meta.fields:
             for field in self.Meta.fields:
                 json_obj[field] = getattr(obj, field)
+
+        if self.Meta.replace_fields:
+            for field in self.Meta.replace_fields:
+                json_obj[field["field"]] = deepgetattr(obj, field["attr"])
 
         return json_response(json_obj, 200)
 
@@ -85,5 +97,9 @@ class BaseSingleResource(Resource):
         if self.Meta.fields:
             for field in self.Meta.fields:
                 json_obj[field] = getattr(obj, field)
+
+        if self.Meta.replace_fields:
+            for field in self.Meta.replace_fields:
+                json_obj[field["field"]] = deepgetattr(obj, field["attr"])
 
         return json_response(json_obj, 200)

@@ -12,3 +12,4 @@ class PurchaseSingleResource(BaseSingleResource):
     class Meta:
         model = Purchase
         fields = ["total"]
+        replace_fields = []

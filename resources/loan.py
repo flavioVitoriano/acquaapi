@@ -1,19 +1,19 @@
-from models import Sale
+from models import Loan
 from .base import BaseResource, BaseSingleResource
 
 
-class SaleResource(BaseResource):
+class LoanResource(BaseResource):
     class Meta:
-        model = Sale
+        model = Loan
         replace_fields = [
             {"field": "client", "attr": "client.id"},
         ]
 
 
-class SaleSingleResource(BaseSingleResource):
+class LoanSingleResource(BaseSingleResource):
     class Meta:
-        model = Sale
-        fields = ["total"]
+        model = Loan
+        fields = []
         replace_fields = [
             {"field": "client", "attr": "client.id"},
         ]

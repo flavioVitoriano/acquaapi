@@ -12,3 +12,4 @@ class ClientSingleResource(BaseSingleResource):
     class Meta:
         model = Client
         fields = []
+        replace_fields = []
