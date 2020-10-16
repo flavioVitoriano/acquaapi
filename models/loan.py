@@ -13,3 +13,4 @@ class Loan(BaseModel):
     order_date = pw.DateTimeField(default=datetime.now)
     accept_date = pw.DateTimeField(null=True)
     status = pw.IntegerField(default=0, choices=status_choices)
+    obs = pw.TextField(null=True)

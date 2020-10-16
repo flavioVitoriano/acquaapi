@@ -4,6 +4,11 @@ from decorators import token_required
 from common.response import json_response
 from playhouse.shortcuts import model_to_dict
 from functools import reduce
+from flask_restful import reqparse
+
+page_parser = reqparse.RequestParser()
+page_parser.add_argument("page", type=int, default=1)
+page_parser.add_argument("limit", type=int, default=5)
 
 
 def deepgetattr(obj, attr):
@@ -12,9 +17,20 @@ def deepgetattr(obj, attr):
 
 
 class BaseResource(Resource):
+    def paginate(self, data):
+        args = page_parser.parse_args()
+        return data.paginate(args.page, args.limit)
+
     @token_required
     def get(self, user):
         data = self.Meta.model.select().where(self.Meta.model.user == user).dicts()
+        data = self.paginate(data)
+
+        def parse(item):
+            item["user"] = user.public_id
+            return item
+
+        data = map(parse, data)
 
         return json_response(list(data), 200)
 
@@ -68,9 +84,11 @@ class BaseSingleResource(Resource):
 
     @token_required
     def get(self, user, pk):
-        obj = self.Meta.model.get(
-            self.Meta.model.user == user & self.Meta.model.id == pk
-        )
+        obj = self.Meta.model.get(self.Meta.model.id == pk)
+
+        if obj.user.id is not user.id:
+            return json_response({"erro": "cliente nao encontrado"}, 404)
+
         json_obj = model_to_dict(obj)
         json_obj["user"] = user.public_id
 

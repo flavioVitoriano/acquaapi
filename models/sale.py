@@ -12,6 +12,7 @@ class Sale(BaseModel):
     value = pw.DecimalField(max_digits=10, decimal_places=2)
     discounts = pw.DecimalField(max_digits=10, decimal_places=2, default=0)
     submit_date = pw.DateTimeField(default=datetime.now)
+    obs = pw.TextField(null=True)
 
     @property
     def total(self):

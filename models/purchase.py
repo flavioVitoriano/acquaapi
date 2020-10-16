@@ -9,6 +9,7 @@ class Purchase(BaseModel):
     quantity = pw.IntegerField(default=1)
     value = pw.DecimalField(max_digits=10, decimal_places=2)
     submit_date = pw.DateField(default=datetime.now)
+    obs = pw.TextField(null=True)
 
     @property
     def total(self):

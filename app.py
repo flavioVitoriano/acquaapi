@@ -11,6 +11,11 @@ from resources import (
     PurchaseSingleResource,
     SaleSingleResource,
     LoanSingleResource,
+    MoveResource,
+    MoveSingleResource,
+    PathResource,
+    PathSingleResource,
+    RoutesGroupStatusResource,
 )
 from db import db as database
 
@@ -40,3 +45,8 @@ api.add_resource(SaleResource, "/sales/")
 api.add_resource(SaleSingleResource, "/sales/<int:pk>/")
 api.add_resource(LoanResource, "/loans/")
 api.add_resource(LoanSingleResource, "/loans/<int:pk>/")
+api.add_resource(MoveResource, "/moves/")
+api.add_resource(MoveSingleResource, "/moves/<int:pk>/")
+api.add_resource(PathResource, "/paths/")
+api.add_resource(PathSingleResource, "/paths/<int:pk>/")
+api.add_resource(RoutesGroupStatusResource, "/paths/status/")
