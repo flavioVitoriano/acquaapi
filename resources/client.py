@@ -1,11 +1,12 @@
 from models import Client
-from .base import BaseResource, BaseSingleResource
+from .base import FilterDateResource, BaseSingleResource
 
 
-class ClientResource(BaseResource):
+class ClientResource(FilterDateResource):
     class Meta:
         model = Client
         replace_fields = []
+        field = "created_at"
 
 
 class ClientSingleResource(BaseSingleResource):

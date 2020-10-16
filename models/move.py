@@ -11,3 +11,4 @@ class Move(BaseModel):
     value = pw.DecimalField(max_digits=10, decimal_places=2)
     obs = pw.TextField(null=True)
     type = pw.IntegerField(choices=type_choices, default=0)
+    submit_date = pw.DateField(default=datetime.now)

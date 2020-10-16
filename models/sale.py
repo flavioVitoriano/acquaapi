@@ -2,6 +2,7 @@ import peewee as pw
 from db import BaseModel
 from .user import User
 from .client import Client
+from .move import Move
 from datetime import datetime
 
 

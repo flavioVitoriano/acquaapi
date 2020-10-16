@@ -5,10 +5,18 @@ from common.response import json_response
 from playhouse.shortcuts import model_to_dict
 from functools import reduce
 from flask_restful import reqparse
+from datetime import date, timedelta
+
+
+default_end_date = (date.today() + timedelta(days=30)).isoformat()
 
 page_parser = reqparse.RequestParser()
 page_parser.add_argument("page", type=int, default=1)
 page_parser.add_argument("limit", type=int, default=5)
+
+filter_parser = reqparse.RequestParser()
+filter_parser.add_argument("initial_date", type=str, default=date.today().isoformat())
+filter_parser.add_argument("end_date", type=str, default=default_end_date)
 
 
 def deepgetattr(obj, attr):
@@ -17,6 +25,12 @@ def deepgetattr(obj, attr):
 
 
 class BaseResource(Resource):
+    def pos_post(self, data):
+        pass
+
+    def filter(self, data):
+        return data
+
     def paginate(self, data):
         args = page_parser.parse_args()
         return data.paginate(args.page, args.limit)
@@ -24,6 +38,7 @@ class BaseResource(Resource):
     @token_required
     def get(self, user):
         data = self.Meta.model.select().where(self.Meta.model.user == user).dicts()
+        data = self.filter(data)
         data = self.paginate(data)
 
         def parse(item):
@@ -49,10 +64,14 @@ class BaseResource(Resource):
             for field in self.Meta.replace_fields:
                 json_obj[field["field"]] = deepgetattr(obj, field["attr"])
 
+        self.pos_post(obj)
         return json_response(json_obj, 201)
 
 
 class BaseSingleResource(Resource):
+    def pos_patch(self, data):
+        pass
+
     @token_required
     def patch(self, user, pk):
         data = request.json
@@ -80,6 +99,7 @@ class BaseSingleResource(Resource):
             for field in self.Meta.replace_fields:
                 json_obj[field["field"]] = deepgetattr(obj, field["attr"])
 
+        self.pos_patch(obj)
         return json_response(json_obj, 200)
 
     @token_required
@@ -121,3 +141,14 @@ class BaseSingleResource(Resource):
                 json_obj[field["field"]] = deepgetattr(obj, field["attr"])
 
         return json_response(json_obj, 200)
+
+
+class FilterDateResource(BaseResource):
+    def filter(self, data):
+        args = filter_parser.parse_args()
+        initial_date = date.fromisoformat(args.initial_date)
+        end_date = date.fromisoformat(args.end_date)
+
+        return data.select().where(
+            getattr(self.Meta.model, self.Meta.field).between(initial_date, end_date)
+        )

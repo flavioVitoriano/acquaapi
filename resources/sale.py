@@ -1,8 +1,14 @@
-from models import Sale
+from models import Sale, Move
 from .base import BaseResource, BaseSingleResource
 
 
 class SaleResource(BaseResource):
+    def pos_post(self, obj):
+        move = Move(
+            value=obj.total, type=0, obs=f"GERADO DA VENDA {obj.id}", user=obj.user
+        )
+        move.save()
+
     class Meta:
         model = Sale
         replace_fields = [
