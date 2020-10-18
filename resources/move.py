@@ -39,8 +39,12 @@ class MoveReportResource(Resource):
             Move.submit_date.between(initial_date, end_date) & Move.user == user
         )
 
-        exit = data.select(fn.SUM(Move.value).alias("total")).where(Move.type == 0)
-        entry = data.select(fn.SUM(Move.value).alias("total")).where(Move.type == 1)
+        exit = data.select(fn.SUM(Move.value).alias("total")).where(
+            Move.type == 1
+        )
+        entry = data.select(fn.SUM(Move.value).alias("total")).where(
+            Move.type == 0
+        )
 
         exit = exit[0].total
         entry = entry[0].total

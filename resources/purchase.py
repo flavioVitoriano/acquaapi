@@ -5,7 +5,10 @@ from .base import BaseResource, BaseSingleResource
 class PurchaseResource(BaseResource):
     def pos_post(self, obj):
         move = Move(
-            value=obj.total, type=1, obs=f"GERADO DA ENTRADA {obj.id}", user=obj.user
+            value=obj.total,
+            type=0,
+            obs=f"GERADO DA ENTRADA {obj.id}",
+            user=obj.user,
         )
         move.save()
 
