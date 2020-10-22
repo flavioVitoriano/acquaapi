@@ -1,8 +1,8 @@
 from models import Client
-from .base import FilterDateResource, BaseSingleResource
+from .base import BaseResource, BaseSingleResource
 
 
-class ClientResource(FilterDateResource):
+class ClientResource(BaseResource):
     class Meta:
         model = Client
         replace_fields = []
