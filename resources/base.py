@@ -56,6 +56,8 @@ class BaseResource(Resource):
         resp = json_response(list(data), 200)
         resp.headers["x-total-count"] = count
 
+        return resp
+
     @token_required
     def post(self, user):
         data = request.json
