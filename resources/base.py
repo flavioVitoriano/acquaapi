@@ -6,6 +6,7 @@ from playhouse.shortcuts import model_to_dict
 from functools import reduce
 from flask_restful import reqparse
 from datetime import date, timedelta
+from peewee import fn
 
 
 default_end_date = (date.today() + timedelta(days=30)).isoformat()
@@ -15,7 +16,9 @@ page_parser.add_argument("page", type=int, default=1)
 page_parser.add_argument("limit", type=int, default=5)
 
 filter_parser = reqparse.RequestParser()
-filter_parser.add_argument("initial_date", type=str, default=date.today().isoformat())
+filter_parser.add_argument(
+    "initial_date", type=str, default=date.today().isoformat()
+)
 filter_parser.add_argument("end_date", type=str, default=default_end_date)
 
 
@@ -37,9 +40,12 @@ class BaseResource(Resource):
 
     @token_required
     def get(self, user):
-        data = self.Meta.model.select().where(self.Meta.model.user == user).dicts()
+        data = (
+            self.Meta.model.select().where(self.Meta.model.user == user).dicts()
+        )
         data = self.filter(data)
         data = self.paginate(data)
+        count = self.Meta.model.select().count()
 
         def parse(item):
             item["user"] = user.public_id
@@ -47,14 +53,17 @@ class BaseResource(Resource):
 
         data = map(parse, data)
 
-        return json_response(list(data), 200)
+        resp = json_response(list(data), 200)
+        resp.headers["x-total-count"] = count
 
     @token_required
     def post(self, user):
         data = request.json
 
         if not data:
-            return json_response({"message": "Cannot create obj without data"}, 401)
+            return json_response(
+                {"message": "Cannot create obj without data"}, 401
+            )
 
         obj = self.Meta.model.create(**data, user=user)
         json_obj = model_to_dict(obj)
@@ -78,7 +87,9 @@ class BaseSingleResource(Resource):
         data.pop("user", "")
 
         if not data:
-            return json_response({"message": "Cannot update obj without data"}, 401)
+            return json_response(
+                {"message": "Cannot update obj without data"}, 401
+            )
 
         fields = data.keys()
         obj = self.Meta.model.get(
@@ -150,5 +161,7 @@ class FilterDateResource(BaseResource):
         end_date = date.fromisoformat(args.end_date)
 
         return data.select().where(
-            getattr(self.Meta.model, self.Meta.field).between(initial_date, end_date)
+            getattr(self.Meta.model, self.Meta.field).between(
+                initial_date, end_date
+            )
         )
