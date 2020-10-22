@@ -45,7 +45,7 @@ class BaseResource(Resource):
         )
         data = self.filter(data)
         data = self.paginate(data)
-        count = self.Meta.model.select().count()
+        count = self.Meta.model.select(self.Meta.model.user == user).count()
 
         def parse(item):
             item["user"] = user.public_id
