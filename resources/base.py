@@ -99,7 +99,7 @@ class BaseSingleResource(Resource):
 
         fields = data.keys()
         obj = self.Meta.model.get(
-            self.Meta.model.id == pk & self.Meta.model.user == user
+            self.Meta.model.id == pk
         )
         for key in fields:
             setattr(obj, key, data[key])
