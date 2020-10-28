@@ -6,7 +6,6 @@ from playhouse.shortcuts import model_to_dict
 from functools import reduce
 from flask_restful import reqparse
 from datetime import date, timedelta
-from peewee import fn
 
 
 default_end_date = (date.today() + timedelta(days=30)).isoformat()
@@ -90,7 +89,12 @@ class BaseSingleResource(Resource):
 
         if not data:
             return json_response(
-                {"message": "Cannot update obj without data"}, 401
+                {"message": "Cannot update obj without data"}, 400
+            )
+
+        if not pk:
+            return json_response(
+                {"message": "Cannot update obj pk is invalid"}, 400
             )
 
         fields = data.keys()
@@ -99,6 +103,8 @@ class BaseSingleResource(Resource):
         )
         for key in fields:
             setattr(obj, key, data[key])
+
+        setattr(obj, "id", pk)
 
         obj.save()
         json_obj = model_to_dict(obj)
