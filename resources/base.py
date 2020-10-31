@@ -5,8 +5,7 @@ from common.response import json_response
 from playhouse.shortcuts import model_to_dict
 from functools import reduce
 from flask_restful import reqparse
-from datetime import date, timedelta
-from datetime import date, datetime
+from datetime import date, timedelta, datetime
 
 default_end_date = (date.today() + timedelta(days=30)).isoformat()
 
@@ -16,7 +15,7 @@ page_parser.add_argument("limit", type=int, default=5)
 
 filter_parser = reqparse.RequestParser()
 filter_parser.add_argument(
-    "initial_date", type=str, default=date.today().isoformat()
+    "start_date", type=str, default=date.today().isoformat()
 )
 filter_parser.add_argument("end_date", type=str, default=default_end_date)
 
@@ -33,6 +32,9 @@ class BaseResource(Resource):
     def filter(self, data):
         return data
 
+    def parse_item(self, item):
+        return item
+
     def paginate(self, data):
         args = page_parser.parse_args()
         return data.paginate(args.page, args.limit)
@@ -47,11 +49,11 @@ class BaseResource(Resource):
         count = self.Meta.model.select(self.Meta.model.user == user).count()
 
         def parse(item):
-            item["user"] = user.public_id
+            item["user"] = user.id
             for x in item:
                 if type(item[x]) in [date, datetime]:
                     item[x] = item[x].isoformat()
-            return item
+            return self.parse_item(item)
 
         data = map(parse, data)
 
@@ -68,10 +70,10 @@ class BaseResource(Resource):
             return json_response(
                 {"message": "Cannot create obj without data"}, 401
             )
-
-        obj = self.Meta.model.create(**data, user=user)
+        data["user"] = user
+        obj = self.Meta.model.create(**data)
         json_obj = model_to_dict(obj)
-        json_obj["user"] = user.public_id
+        json_obj["user"] = user.id
 
         # convert date objs to iso
         for x in json_obj:
@@ -114,7 +116,7 @@ class BaseSingleResource(Resource):
 
         obj.save()
         json_obj = model_to_dict(obj)
-        json_obj["user"] = user.public_id
+        json_obj["user"] = user.id
 
         if self.Meta.fields:
             for field in self.Meta.fields:
@@ -135,7 +137,7 @@ class BaseSingleResource(Resource):
             return json_response({"erro": "cliente nao encontrado"}, 404)
 
         json_obj = model_to_dict(obj)
-        json_obj["user"] = user.public_id
+        json_obj["user"] = user.id
         # convert date objs to iso
         for x in json_obj:
             if type(json_obj[x]) in [date, datetime]:
@@ -159,7 +161,7 @@ class BaseSingleResource(Resource):
         obj.delete_instance()
 
         json_obj = model_to_dict(obj)
-        json_obj["user"] = user.public_id
+        json_obj["user"] = user.id
 
         if self.Meta.fields:
             for field in self.Meta.fields:
@@ -175,11 +177,11 @@ class BaseSingleResource(Resource):
 class FilterDateResource(BaseResource):
     def filter(self, data):
         args = filter_parser.parse_args()
-        initial_date = date.fromisoformat(args.initial_date)
+        start_date = date.fromisoformat(args.start_date)
         end_date = date.fromisoformat(args.end_date)
 
         return data.select().where(
             getattr(self.Meta.model, self.Meta.field).between(
-                initial_date, end_date
+                start_date, end_date
             )
         )

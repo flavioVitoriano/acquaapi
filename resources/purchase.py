@@ -1,8 +1,8 @@
 from models import Purchase, Move
-from .base import BaseResource, BaseSingleResource
+from .base import BaseResource, BaseSingleResource, FilterDateResource
 
 
-class PurchaseResource(BaseResource):
+class PurchaseResource(FilterDateResource):
     def pos_post(self, obj):
         move = Move(
             value=obj.total,
@@ -15,6 +15,7 @@ class PurchaseResource(BaseResource):
     class Meta:
         model = Purchase
         replace_fields = []
+        field = "submit_date"
 
 
 class PurchaseSingleResource(BaseSingleResource):
