@@ -2,8 +2,8 @@ import peewee as pw
 from db import BaseModel
 from .user import User
 from .client import Client
-from .move import Move
 from datetime import datetime
+from .base import TimezoneField
 
 
 class Sale(BaseModel):
@@ -12,7 +12,7 @@ class Sale(BaseModel):
     quantity = pw.IntegerField(default=1)
     value = pw.DecimalField(max_digits=10, decimal_places=2)
     discounts = pw.DecimalField(max_digits=10, decimal_places=2, default=0)
-    submit_date = pw.DateTimeField(default=datetime.now)
+    submit_date = TimezoneField(default=datetime.now)
     obs = pw.TextField(null=True)
 
     @property

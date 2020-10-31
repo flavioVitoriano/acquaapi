@@ -18,8 +18,6 @@ class ClientResource(BaseResource):
 
     class Meta:
         model = Client
-        replace_fields = []
-        field = "created_at"
 
 
 class ClientSingleResource(BaseSingleResource):

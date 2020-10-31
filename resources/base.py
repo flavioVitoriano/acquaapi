@@ -6,7 +6,7 @@ from playhouse.shortcuts import model_to_dict
 from functools import reduce
 from flask_restful import reqparse
 from datetime import date, timedelta
-
+from datetime import date, datetime
 
 default_end_date = (date.today() + timedelta(days=30)).isoformat()
 
@@ -48,6 +48,9 @@ class BaseResource(Resource):
 
         def parse(item):
             item["user"] = user.public_id
+            for x in item:
+                if type(item[x]) in [date, datetime]:
+                    item[x] = item[x].isoformat()
             return item
 
         data = map(parse, data)
@@ -69,6 +72,11 @@ class BaseResource(Resource):
         obj = self.Meta.model.create(**data, user=user)
         json_obj = model_to_dict(obj)
         json_obj["user"] = user.public_id
+
+        # convert date objs to iso
+        for x in json_obj:
+            if type(json_obj[x]) in [date, datetime]:
+                json_obj[x] = json_obj[x].isoformat()
 
         if self.Meta.replace_fields:
             for field in self.Meta.replace_fields:
@@ -98,9 +106,7 @@ class BaseSingleResource(Resource):
             )
 
         fields = data.keys()
-        obj = self.Meta.model.get(
-            self.Meta.model.id == pk
-        )
+        obj = self.Meta.model.get(self.Meta.model.id == pk)
         for key in fields:
             setattr(obj, key, data[key])
 
@@ -130,6 +136,10 @@ class BaseSingleResource(Resource):
 
         json_obj = model_to_dict(obj)
         json_obj["user"] = user.public_id
+        # convert date objs to iso
+        for x in json_obj:
+            if type(json_obj[x]) in [date, datetime]:
+                json_obj[x] = json_obj[x].isoformat()
 
         if self.Meta.fields:
             for field in self.Meta.fields:
