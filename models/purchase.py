@@ -13,4 +13,4 @@ class Purchase(BaseModel):
 
     @property
     def total(self):
-        return self.quantity * float(self.value)
+        return float(self.quantity) * float(self.value)

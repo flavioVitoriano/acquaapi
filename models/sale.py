@@ -17,4 +17,4 @@ class Sale(BaseModel):
 
     @property
     def total(self):
-        return (self.quantity * float(self.value)) - float(self.discounts)
+        return (float(self.quantity) * float(self.value)) - float(self.discounts)
