@@ -1,14 +1,20 @@
 from models import Sale, Move
-from .base import FilterDateResource, BaseSingleResource
+from .base import BaseResource, BaseSingleResource
 from models import Client
 from flask_restful import reqparse
+from datetime import date, timedelta
 
+default_end_date = (date.today() + timedelta(days=30)).isoformat()
 
 filter_parser = reqparse.RequestParser()
 filter_parser.add_argument("client", type=int)
+filter_parser.add_argument(
+    "start_date", type=str, default=date.today().isoformat()
+)
+filter_parser.add_argument("end_date", type=str, default=default_end_date)
 
 
-class SaleResource(FilterDateResource):
+class SaleResource(BaseResource):
     def pos_post(self, obj):
         move = Move(
             value=obj.total,
@@ -29,16 +35,23 @@ class SaleResource(FilterDateResource):
         return item
 
     def filter(self, data):
-        data = super().filter(data)
         args = filter_parser.parse_args()
         client = args.client
+        start_date = date.fromisoformat(args.start_date)
+        end_date = date.fromisoformat(args.end_date)
 
-        if not client:
-            return data
+        if client:
+            client_obj = Client.get_by_id(client)
+            data = data.select().where(Sale.client == client_obj)
 
-        client_obj = Client.get_by_id(client)
-
-        data = data.select().where(Sale.client == client_obj)
+        if start_date not in ["Invalid", "", None] and end_date not in [
+            "Invalid",
+            "",
+            None,
+        ]:
+            data = data.select().where(
+                Sale.submit_date.between(start_date, end_date)
+            )
 
         return data
 
