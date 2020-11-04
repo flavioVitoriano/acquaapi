@@ -110,7 +110,8 @@ class BaseSingleResource(Resource):
         fields = data.keys()
         obj = self.Meta.model.get(self.Meta.model.id == pk)
         for key in fields:
-            setattr(obj, key, data[key])
+            if key in self.Meta.model._meta.fields.keys():
+                setattr(obj, key, data[key])
 
         setattr(obj, "id", pk)
 
