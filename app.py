@@ -17,6 +17,7 @@ from resources import (
     PathSingleResource,
     RoutesGroupStatusResource,
     MoveReportResource,
+    RegisterShipMakeResource,
 )
 from db import db as database
 
@@ -52,3 +53,4 @@ api.add_resource(PathResource, "/paths/")
 api.add_resource(PathSingleResource, "/paths/<int:pk>/")
 api.add_resource(RoutesGroupStatusResource, "/paths/status/")
 api.add_resource(MoveReportResource, "/moves/report/")
+api.add_resource(RegisterShipMakeResource, "/paths/<path_id>/register/")

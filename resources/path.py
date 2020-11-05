@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from models import Path, Client
+from models import Path, Client, Move
 from .base import BaseResource, BaseSingleResource
 from datetime import timedelta, date
 from common.response import json_response
@@ -89,3 +89,27 @@ class RoutesGroupStatusResource(Resource):
         result = map(parse, routes)
 
         return json_response(list(result), 200)
+
+
+class RegisterShipMakeResource(Resource):
+    @token_required
+    def put(self, user, path_id):
+        path_obj = (
+            Path.select().where(Path.user == user, Path.id == path_id).get()
+        )
+
+        path_obj.last_ship_date = date.today()
+
+        move = Move(
+            value=path_obj.total,
+            type=0,
+            obs=f"GERADO DA VENDA DA ROTA {path_obj.id}",
+            user=user,
+        )
+
+        path_obj.save()
+        move.save()
+
+        result = {"msg": "sucesso"}
+
+        return json_response(result, 200)
