@@ -18,7 +18,7 @@ class SaleResource(BaseResource):
     def pos_post(self, obj):
         move = Move(
             value=obj.total,
-            type=1,
+            type=0,
             obs=f"GERADO DA VENDA {obj.id}",
             user=obj.user,
         )

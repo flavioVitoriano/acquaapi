@@ -6,8 +6,8 @@ class PurchaseResource(FilterDateResource):
     def pos_post(self, obj):
         move = Move(
             value=obj.total,
-            type=0,
-            obs=f"GERADO DA ENTRADA {obj.id}",
+            type=1,
+            obs=f"GERADO DA COMPRA {obj.id}",
             user=obj.user,
         )
         move.save()
