@@ -21,4 +21,3 @@ class TimezoneField(Field):
     def python_value(self, value: str) -> str:
         if value:
             return datetime.fromisoformat(value)
-        return value
