@@ -11,6 +11,8 @@ class TimezoneField(Field):
     field_type = "TEXT"  # This is how the field appears in Sqlite
 
     def db_value(self, value: datetime) -> str:
+        if value is None:
+            return None
         if type(value) == str:
             obj = datetime.fromisoformat(value)
             return obj.isoformat()
