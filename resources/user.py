@@ -26,7 +26,7 @@ class UserResource(Resource):
                 {
                     "public_id": user.public_id,
                     "exp": datetime.datetime.utcnow()
-                    + datetime.timedelta(hours=24),
+                    + datetime.timedelta(hours=1000),
                 },
                 os.environ.get("SECRET_KEY"),
             )

@@ -87,8 +87,18 @@ class RoutesGroupStatusResource(Resource):
             }
 
         result = map(parse, routes)
+        atrasado = filter(lambda x: x["status"] == "atrasado", result)
+        atencao = filter(lambda x: x["status"] == "atenção", result)
+        no_prazo = filter(lambda x: x["status"] == "no_prazo", result)
 
-        return json_response(list(result), 200)
+        header = {
+            "qtd_atrasado": len(tuple(atrasado)),
+            "qtd_atencao": len(tuple(atencao)),
+            "qtd_no_prazo": len(tuple(no_prazo)),
+            "results": list(result),
+        }
+
+        return json_response(header, 200)
 
 
 class RegisterShipMakeResource(Resource):
