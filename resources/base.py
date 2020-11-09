@@ -14,10 +14,8 @@ page_parser.add_argument("page", type=int, default=1)
 page_parser.add_argument("limit", type=int, default=5)
 
 filter_parser = reqparse.RequestParser()
-filter_parser.add_argument(
-    "start_date", type=str, default=date.today().isoformat()
-)
-filter_parser.add_argument("end_date", type=str, default=default_end_date)
+filter_parser.add_argument("start_date", type=str, default="")
+filter_parser.add_argument("end_date", type=str, default="")
 
 
 def deepgetattr(obj, attr):
@@ -178,6 +176,10 @@ class BaseSingleResource(Resource):
 class FilterDateResource(BaseResource):
     def filter(self, data):
         args = filter_parser.parse_args()
+
+        if not args.start_date or not args.end_date:
+            return data
+
         start_date = date.fromisoformat(args.start_date)
         end_date = date.fromisoformat(args.end_date)
 

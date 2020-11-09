@@ -24,9 +24,9 @@ class UserResource(Resource):
         if check_passwords(auth["password"], user.password):
             token = jwt.encode(
                 {
-                    "public_id": user.public_id,
+                    "id": user.id,
                     "exp": datetime.datetime.utcnow()
-                    + datetime.timedelta(hours=1000),
+                    + datetime.timedelta(hours=1500),
                 },
                 os.environ.get("SECRET_KEY"),
             )

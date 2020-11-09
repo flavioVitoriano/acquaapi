@@ -21,7 +21,7 @@ def token_required(f):
 
         try:
             data = jwt.decode(token, os.environ.get("SECRET_KEY"))
-            current_user = User.get(public_id=data["public_id"])
+            current_user = User.get_by_id(data["id"])
 
         except jwt.exceptions.DecodeError:
             return json_response({"message": "token is invalid"}, 401)

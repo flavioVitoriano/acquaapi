@@ -5,16 +5,12 @@ from datetime import timedelta, date
 from common.response import json_response
 from decorators import token_required
 from flask_restful import reqparse
-
-
-default_end_date = (date.today() + timedelta(days=30)).isoformat()
+from pprint import pprint
 
 filter_parser = reqparse.RequestParser()
 filter_parser.add_argument("client", type=int)
-filter_parser.add_argument(
-    "start_date", type=str, default=date.today().isoformat()
-)
-filter_parser.add_argument("end_date", type=str, default=default_end_date)
+filter_parser.add_argument("start_date", type=str, default="")
+filter_parser.add_argument("end_date", type=str, default="")
 
 
 class PathResource(BaseResource):
@@ -86,16 +82,16 @@ class RoutesGroupStatusResource(Resource):
                 "status": status,
             }
 
-        result = map(parse, routes)
-        atrasado = filter(lambda x: x["status"] == "atrasado", result)
-        atencao = filter(lambda x: x["status"] == "atenção", result)
-        no_prazo = filter(lambda x: x["status"] == "no_prazo", result)
+        result = list(map(parse, routes))
+        atrasado = list(filter(lambda x: x["status"] == "atrasado", result))
+        atencao = list(filter(lambda x: x["status"] == "atenção", result))
+        no_prazo = list(filter(lambda x: x["status"] == "no_prazo", result))
 
         header = {
-            "qtd_atrasado": len(tuple(atrasado)),
-            "qtd_atencao": len(tuple(atencao)),
-            "qtd_no_prazo": len(tuple(no_prazo)),
-            "results": list(result),
+            "qtd_atrasado": len(atrasado),
+            "qtd_atencao": len(atencao),
+            "qtd_no_prazo": len(no_prazo),
+            "results": result,
         }
 
         return json_response(header, 200)
