@@ -39,16 +39,20 @@ class MoveReportResource(Resource):
             Move.submit_date.between(initial_date, end_date) & Move.user == user
         )
 
-        exit = data.select(fn.SUM(Move.value).alias("total")).where(
+        out = data.select(fn.SUM(Move.value).alias("total")).where(
             Move.type == 1
         )
         entry = data.select(fn.SUM(Move.value).alias("total")).where(
             Move.type == 0
         )
 
-        exit = exit[0].total
+        out = out[0].total
+        if out is None:
+            out = 0
         entry = entry[0].total
+        if entry is None:
+            entry = 0
 
         return json_response(
-            {"entry_sum": entry, "exit_sum": exit, "profit": (entry - exit)}, 200
+            {"entry_sum": entry, "out_sum": out, "profit": (entry - out)}, 200
         )
