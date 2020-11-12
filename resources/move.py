@@ -36,7 +36,7 @@ class MoveReportResource(Resource):
         end_date = date.fromisoformat(args.end_date)
 
         data = Move.select().where(
-            Move.submit_date.between(initial_date, end_date) & Move.user == user
+            Move.submit_date.between(initial_date, end_date), Move.user == user
         )
 
         out = data.select(fn.SUM(Move.value).alias("total")).where(

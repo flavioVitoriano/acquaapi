@@ -5,7 +5,7 @@ from .base import TimezoneField
 
 
 class User(BaseModel):
-    public_id = pw.IntegerField(unique=True)
+    public_id = pw.CharField(max_length=255,unique=True)
     full_name = pw.CharField(max_length=255, null=True)
     username = pw.CharField(max_length=20, unique=True)
     password = pw.CharField(max_length=255)

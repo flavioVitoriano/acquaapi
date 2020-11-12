@@ -106,7 +106,7 @@ class BaseSingleResource(Resource):
             )
 
         fields = data.keys()
-        obj = self.Meta.model.get(self.Meta.model.id == pk)
+        obj = self.Meta.model.get(self.Meta.model.id == pk, self.Meta.model.user == user)
         for key in fields:
             if key in self.Meta.model._meta.fields.keys():
                 setattr(obj, key, data[key])
@@ -154,7 +154,7 @@ class BaseSingleResource(Resource):
 
     def delete(self, user, pk):
         obj = self.Meta.model.get(
-            self.Meta.model.user == user & self.Meta.model.id == pk
+            self.Meta.model.user == user, self.Meta.model.id == pk
         )
 
         obj.delete_instance()
